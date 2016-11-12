@@ -4,13 +4,12 @@ require 'nzta_twitter/last_id'
 require 'time'
 require 'active_record'
 
-describe NztaTwitter do
+describe NztaTwitter, :twitter => true do
 
   # setup
   before(:all) do
-    @client = NztaTwitter.get_client()
-    @tweets = NztaTwitter.get_tweets(@client)
-    @tweets_complete = NztaTwitter.get_all_tweets(@client)
+    @tweets = NztaTwitter.get_tweets()
+    @tweets_complete = NztaTwitter.get_all_tweets()
     @tweets_written = []
 
     ActiveRecord::Base.establish_connection(
@@ -41,26 +40,26 @@ describe NztaTwitter do
   end
 
   it 'can get the latest tweet id' do
-    latest_tweet_id = NztaTwitter.get_latest_tweet_id(@client)
+    latest_tweet_id = NztaTwitter.get_latest_tweet_id()
     expect(latest_tweet_id).to eq @tweets[0].id
   end
 
   it 'can get the last id stored in the last_ids database' do
     last_id = NztaTwitter::LastId.last.tweet_id
-    latest_tweet_id = NztaTwitter.get_latest_tweet_id(@client)
+    latest_tweet_id = NztaTwitter.get_latest_tweet_id()
     expect(last_id).to eq latest_tweet_id.to_s
   end
 
   it 'can get the latest tweets' do
-    latest_tweet_id = NztaTwitter.get_latest_tweet_id(@client)
+    latest_tweet_id = NztaTwitter.get_latest_tweet_id()
     last_id = @tweets_complete[451].id
-    latest_tweets = NztaTwitter.get_latest_tweets(@client, last_id)
+    latest_tweets = NztaTwitter.get_latest_tweets(last_id)
     latest = latest_tweets[0].id
     expect(latest).to eq latest_tweet_id
   end
 
   it 'can get new tweets' do
-    tweets = NztaTwitter.get_tweets(@client, @tweets[3].id)
+    tweets = NztaTwitter.get_tweets(@tweets[3].id)
     expect(tweets.size).to eq 3
   end
 

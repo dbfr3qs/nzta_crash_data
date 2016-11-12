@@ -1,52 +1,50 @@
 require 'twitter'
 require 'nzta_twitter/tweet'
 require 'nzta_twitter/last_id'
+require 'nzta_twitter/credentials'
 
 module NztaTwitter
-  def self.get_client()
-    client = Twitter::REST::Client.new do |config|
-      config.consumer_key        = "mYbAx5Hs7AkfYJldC1hWU8R07"
-      config.consumer_secret     = "8Sn3Oy2xiVjRbRG6c3bOyyC41mJM7chkjLG9tSRFlphIYvARKE"
-      config.access_token        = "3323005244-Jx43rgPqWnf1hq6nptm1XxvLM2AfsapvSBkc2eR"
-      config.access_token_secret = "ENV36a9gYVaC9wXCH3Xv7uqKOuf5r5CkT4NUagGveWtRh"
-    end
-    client
+  @@credentials = Credentials.new() 
+  @@client = Twitter::REST::Client.new do |config|
+      config.consumer_key        = @@credentials.consumer_key
+      config.consumer_secret     = @@credentials.consumer_secret
+      config.access_token        = @@credentials.access_token
+      config.access_token_secret = @@credentials.access_token_secret
   end
 
   # get the most recent tweets
-  def self.get_tweets(client, last_id=nil)
+  def self.get_tweets(last_id=nil)
     options = (last_id == nil ? { :count => 200 } : { :count => 200, :since_id => last_id })
-    client.user_timeline('nztawgtn', options)
+    @@client.user_timeline('nztawgtn', options)
   end
 
-  def self.get_latest_tweet_id(client)
+  def self.get_latest_tweet_id()
     options = { :count => 1 }
-    latest_tweet_id = client.user_timeline('nztawgtn', options)[0].id
+    latest_tweet_id = @@client.user_timeline('nztawgtn', options)[0].id
     latest_tweet_id
   end
 
-  def self.get_latest_tweets(client, last_id)
-    #tweets = []
-    latest_tweet_id = get_latest_tweet_id(client)
-    new_tweets = get_tweets(client, last_id)
+  def self.get_latest_tweets(last_id=LastId.last.tweet_id)
+    latest_tweet_id = get_latest_tweet_id()
+    new_tweets = get_tweets(last_id)
     tweets = new_tweets
     until new_tweets.first.id == latest_tweet_id do
       last_id = new_tweets.first.id
-      new_tweets = get_tweets(client, last_id)
+      new_tweets = get_tweets(last_id)
       tweets = new_tweets + tweets
     end
     tweets
   end
 
   # get all of the available 3200 tweets
-  def self.get_all_tweets(client)
+  def self.get_all_tweets()
     options = { :count => 200 }
-    tweets = client.user_timeline('nztawgtn', options)
+    tweets = @@client.user_timeline('nztawgtn', options)
     max_id = tweets.last.id
 
     until tweets.size == 3200 do
       options = { :count => 200, :max_id => max_id }
-      tweets += client.user_timeline('nztawgtn', options)
+      tweets += @@client.user_timeline('nztawgtn', options)
       max_id = tweets.last.id
     end
     tweets

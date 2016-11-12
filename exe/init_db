@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
 require "bundler/setup"
-require "nzta_twitter"
 require 'active_record'
 
 ActiveRecord::Base.establish_connection(
