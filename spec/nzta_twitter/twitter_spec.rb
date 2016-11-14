@@ -23,7 +23,6 @@ describe NztaTwitter, :twitter => true do
   # clean up
   after(:all) do
     destroy_test_tables()
-    File.delete('tweets_test.db')
   end
 
   it 'can retrieve tweets from the nztawgtn twitter feed' do

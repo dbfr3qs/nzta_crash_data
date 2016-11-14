@@ -1,6 +1,7 @@
 require 'thor'
 require 'nzta_twitter/twitter'
 require 'nzta_twitter/classify'
+require 'nzta_twitter/csv'
 require 'colorize'
 
 module NztaTwitter
@@ -33,6 +34,14 @@ module NztaTwitter
     desc "classify", "classify non classified records in the database"
     def classify()
       NztaTwitter::Classify.classify()
+    end
+
+    desc "csv", "create csv files based on the currently classified data in the database"
+    def csv()
+      NztaTwitter::Csv.build_feature_index()
+      NztaTwitter::Csv.process_tweets_into_features()
+      NztaTwitter::Csv.write_features_csv()
+      NztaTwitter::Csv.write_labels_csv()
     end
   end
 end

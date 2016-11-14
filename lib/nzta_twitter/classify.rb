@@ -24,12 +24,18 @@ module NztaTwitter
     end
 
     def self.classify()
-      NztaTwitter::Tweet.where(classified: 'false').find_each do |tweet|
-        print "Tweet #{tweet.tweet_id} text:\n"
-        print "#{tweet.body}\n".colorize(:green)
-        print "Classify (1=postive, 0 or blank = negative):"
-        classed_as = STDIN.gets.strip!
-        class_tweet(tweet, classed_as)
+      tweets = NztaTwitter::Tweet.where(classified: 'false').find_each
+      if tweets.size > 0
+        tweets.each do |tweet|
+          puts "There are #{tweets.size} unclassified tweets in the database".colorize(:red)
+          print "Tweet #{tweet.tweet_id} text:\n"
+          print "#{tweet.body}\n".colorize(:green)
+          print "Classify (1=postive, 0 or blank = negative):"
+          classed_as = STDIN.gets.strip!
+          class_tweet(tweet, classed_as)
+        end
+      else
+        puts "There are no unclassified tweets in the database."
       end
     end
 

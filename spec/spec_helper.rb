@@ -42,4 +42,5 @@ def destroy_test_tables()
     drop_table :tweets
     drop_table :last_ids
   end
+  File.delete('tweets_test.db')
 end

@@ -2,7 +2,19 @@ require 'spec_helper'
 require 'nzta_twitter/tweet'
 require 'time'
 
-describe NztaTwitter::Tweet do
+describe NztaTwitter::Tweet, :tweet => true do
+  before(:all) do
+    ActiveRecord::Base.establish_connection(
+      :adapter => 'sqlite3',
+      :database => 'tweets_test.db',
+      :host => 'localhost'
+    )
+    setup_test_tables()
+  end
+
+  after(:all) do
+    destroy_test_tables()
+  end
 
   it 'can create a new tweet object and save it to the datastore' do
     tweet = NztaTwitter::Tweet.new()
